@@ -38,7 +38,9 @@ plt.show()
 ```
 
 ## Output
-The output is picture in .jpg format.
+The output is picture in .png format.
+![alt text](https://github.com/mjirik/wsitools/blob/main/graphics/cell_nuclei.png?raw=true)
+![alt text](https://github.com/mjirik/wsitools/blob/main/graphics/cell_nuclei_2.png?raw=true)
 
 
 
