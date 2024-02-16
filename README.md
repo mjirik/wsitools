@@ -3,10 +3,16 @@ GitHub repository for wsitools project. WSI stands for Whole Slide Image.
 
 ## Description
 The main goal is to process and afterwards convert medical histological images in .czi and .ndpi formats on standard picture
-formats such as .jpg or .png.
+formats such as .jpg or .png. Thanks to this module it is also possible to split large .czi file into tiles.
+Each tile (np.array format) can be processed separately. It is possible to write own function for their processing. This attitude is good mainly because the size of .czi file could be
+even several gigabytes, so it can happen that the file does not fit into memory. After tile processing these tiles are merged together.
+Merged tiles create picture in .png format.
 
-## Google Colab notebook
-You can try demo in Google Colab: https://colab.research.google.com/drive/1kDjsbPCEFS65AdRftMJ5JoS8pr350pbW?usp=sharing
+
+## Google Colab notebooks
+You can try several demos:
+* Basic introduction to wsitools module: https://colab.research.google.com/drive/1kDjsbPCEFS65AdRftMJ5JoS8pr350pbW?usp=sharing
+* Split and merge medical image with tile processing: https://colab.research.google.com/drive/1x9fY0MBUAcPELJuKJl31Hh6i_LYV89Qs?usp=sharing
 
 ## Installation
 ```commandline
