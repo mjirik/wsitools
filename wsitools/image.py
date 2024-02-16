@@ -302,7 +302,7 @@ class ImageSlide:
 
     def _read_region_nzi(self, location, level, size):
         from czifile import CziFile
-        import image_czi
+        from . import image_czi
 
         image_czi.instal_codecs_with_pip()
 
