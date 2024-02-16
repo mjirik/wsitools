@@ -25,9 +25,9 @@ import numpy as np
 import skimage.color
 import skimage.io
 import skimage.transform
-import annotation as scan
-import libfixer
-import image_intensity_rescale
+from . import annotation as scan
+from . import libfixer
+from . import image_intensity_rescale
 
 import imma
 import imma.image
