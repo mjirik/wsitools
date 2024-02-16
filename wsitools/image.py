@@ -25,9 +25,10 @@ import numpy as np
 import skimage.color
 import skimage.io
 import skimage.transform
-from scaffan import annotation as scan
-from scaffan import libfixer
-from scaffan import image_intensity_rescale
+import annotation as scan
+import libfixer
+import image_intensity_rescale
+
 import imma
 import imma.image
 from pathlib import Path
@@ -43,12 +44,10 @@ annotationID = Union[int, str]
 annotationIDs = List[annotationID]
 
 
-#
-
-
 def import_openslide():
     if os.name == "nt":
         pth = op.expanduser(r"~\Downloads\openslide-win64-20171122\bin")
+        # pth = op.expanduser(r"~\Downloads\openslide-win64-20231011\bin") # TODO: newer version?
         dll_list = glob.glob(op.join(pth, "*.dll"))
         if len(dll_list) < 5:
             print("Trying to download openslide dll files in {}".format(pth))
@@ -61,6 +60,15 @@ def import_openslide():
         if pth not in orig_split:
             logger.debug("add path {}".format(pth))
         os.environ["PATH"] = pth + ";" + os.environ["PATH"]
+
+        # Windows compatibility (otherwise it did not work)
+        # https://openslide.org/api/python/#installing
+        if hasattr(os, 'add_dll_directory'):
+            # Windows
+            with os.add_dll_directory(pth):
+                import openslide
+        else:
+            import openslide
 
 
 import_openslide()
@@ -294,7 +302,7 @@ class ImageSlide:
 
     def _read_region_nzi(self, location, level, size):
         from czifile import CziFile
-        from . import image_czi
+        import image_czi
 
         image_czi.instal_codecs_with_pip()
 

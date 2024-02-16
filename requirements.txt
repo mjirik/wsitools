@@ -1,0 +1,8 @@
+numpy~=1.26.3
+matplotlib~=3.5.3
+loguru~=0.7.2
+click~=8.1.7
+scikit-image~=0.20.0
+setuptools~=68.2.2
+pillow~=10.2.0
+scipy~=1.11.4
