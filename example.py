@@ -1,5 +1,5 @@
 import requests
-import image
+import wsitools.image
 import matplotlib.pyplot as plt
 
 # Possible filenames: J7_5_a.czi, J7_25_a_ann0004.czi, J8_8_a.czi
@@ -20,7 +20,7 @@ else:
     print("Failed to fetch the file from GitHub")
 
 # Now you can use the local file in your code
-anim = image.AnnotatedImage(filename)
+anim = wsitools.image.AnnotatedImage(filename)
 
 # Annotations
 # print(anim.annotations)
