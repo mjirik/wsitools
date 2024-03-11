@@ -141,10 +141,17 @@ class ImageSplitterMerger(object):
         total_tiles = self.get_number_tiles(self.img_shape)
 
         for tile in tqdm.tqdm(self.split_iterator(), total=total_tiles, desc="Splitting and Processing Tiles"):
-            processed_tile = np.copy(tile)
+            processed_tile_normalized = np.copy(tile)
             if self.fcn is not None:
                 processed_tile = self.fcn(tile)
-            processed_tiles.append(processed_tile)
+
+                # Normalize to 0-255 range
+                processed_tile_normalized = cv2.normalize(processed_tile, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_32F)
+
+                # Convert to uint8 for compatibility (optional)
+                processed_tile_normalized = processed_tile_normalized.astype(np.uint8)
+
+            processed_tiles.append(processed_tile_normalized)
 
         merged_img = self.merge_tiles_to_image(processed_tiles)
 
