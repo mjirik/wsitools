@@ -16,7 +16,7 @@ You can try several demos:
 
 ## Installation
 ```commandline
-pip install openslide-python imagecodecs tensorflow loguru read_roi czifile
+pip install openslide-python imagecodecs loguru read_roi czifile
 pip install git+https://github.com/mjirik/imma.git
 
 apt-get install openslide-tools
