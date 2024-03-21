@@ -17,7 +17,7 @@ import re
 import math
 from read_roi import read_roi_zip
 
-__version__ = "0.34.2"
+__version__ = "0.32.0"
 
 # def get_one_annotation(viewstate):
 #     titles_list = viewstate.xpath(".//title/text()")
@@ -91,6 +91,7 @@ def get_one_annotation(viewstate):
 
 
 def _ndpa_file_to_json(pth):
+
     # problem is loading lxml together with openslide
     # from lxml import etree
 
@@ -147,6 +148,7 @@ def get_imsize_from_imagej_roi(rois):
         roi = rois[roikey]
         #         print(roi["type"])
         if roi["type"] == "rectangle":
+
             widthi = roi["width"]
             heighti = roi["height"]
             if widthi > width:
@@ -187,6 +189,7 @@ def read_annotations_imagej(path, slide_size) -> list:
         for roi_key in rois:
             one = rois[roi_key]
             if one["type"] == "polygon":
+
                 an_title = one["name"]
                 m = re.search(r"#[0-9a-fA-F]{6}", one["name"])
                 if m is None:
@@ -392,6 +395,7 @@ def annotation_colors(annotations):
         title = an["color"]
         title = title.upper()
         if title in colors:
+
             colors[title].append(i)
         else:
             colors[title] = [i]
@@ -409,6 +413,7 @@ def _get_annotation_elements(annotations, element_keyword):
         title = an[element_keyword]
         title = title.upper()
         if title in colors:
+
             colors[title].append(i)
         else:
             colors[title] = [i]
