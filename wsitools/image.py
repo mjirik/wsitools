@@ -25,9 +25,9 @@ import numpy as np
 import skimage.color
 import skimage.io
 import skimage.transform
-from scaffan import annotation as scan
-from scaffan import libfixer
-from scaffan import image_intensity_rescale
+from . import annotation as scan
+from . import libfixer
+from . import image_intensity_rescale
 import imma
 import imma.image
 from pathlib import Path
@@ -69,14 +69,14 @@ import openslide
 
 def fix_location_ndpi(imsl, location, level):
     return list(
-        (location - np.mod(location, imsl.level_downsamples[level])).astype(np.int)
+        (location - np.mod(location, imsl.level_downsamples[level])).astype(int)
     )
 
 
 def fix_location_czi(imsl, location, level):
     return list(np.asarray(location) - imsl._czi_start)
     # return list(
-    #     (location - np.mod(location, imsl.level_downsamples[level])).astype(np.int)
+    #     (location - np.mod(location, imsl.level_downsamples[level])).astype(int)
     # )
 
 
@@ -101,7 +101,7 @@ def get_region_location_by_center(imsl, center, level, size):
     size2 = (np.asarray(size) / 2).astype(int)
 
     offset = size2 * imsl.level_downsamples[level]
-    location = (np.asarray(center) - offset).astype(np.int)
+    location = (np.asarray(center) - offset).astype(int)
     return location
 
 
@@ -109,7 +109,7 @@ def get_region_center_by_location(imsl, location, level, size):
     size2 = (np.asarray(size) / 2).astype(int)
 
     offset = size2 * imsl.level_downsamples[level]
-    center = (np.asarray(location) + offset).astype(np.int)
+    center = (np.asarray(location) + offset).astype(int)
     return center
 
 
@@ -179,7 +179,7 @@ def get_resize_parameters(imsl, former_level, former_size, new_level):
     scale_factor = (
         imsl.level_downsamples[former_level] / imsl.level_downsamples[new_level]
     )
-    new_size = (np.asarray(former_size) * scale_factor).astype(np.int)
+    new_size = (np.asarray(former_size) * scale_factor).astype(int)
     return scale_factor, new_size
 
 
@@ -1337,7 +1337,7 @@ class View:
                         size_on_level
                     )
                     size_on_level = size_on_level * alpha
-                    size_on_level = size_on_level.astype(np.int)
+                    size_on_level = size_on_level.astype(int)
 
         else:
             if level is None:
@@ -1353,7 +1353,7 @@ class View:
             if size_on_level is None and size_mm is None:
                 size_on_level = (
                     size_on_level0 / self.anim.openslide.level_downsamples[level]
-                ).astype(np.int)
+                ).astype(int)
 
         if size_mm is not None:
             if np.isscalar(size_mm):
@@ -1363,7 +1363,7 @@ class View:
             size_mm = np.asarray(size_mm)
             size_on_level = np.ceil(
                 size_mm / self.get_pixelsize_on_level(level)[0]
-            ).astype(np.int)
+            ).astype(int)
 
         if size_on_level is None:
             size_on_level = [256, 256]
@@ -1384,16 +1384,16 @@ class View:
             self.zoom = pxsz / (1.0 * pixelsize_mm)
             self.region_size_on_pixelsize_mm = np.ceil(
                 size_on_level * self.zoom
-            ).astype(np.int)
+            ).astype(int)
         else:
             self.region_size_on_pixelsize_mm = size_on_level
             self.zoom = np.array([1, 1])
 
         if location_mm is not None:
-            location = (location_mm / self.get_pixelsize_on_level(0)[0]).astype(np.int)
+            location = (location_mm / self.get_pixelsize_on_level(0)[0]).astype(int)
         if center_mm is not None:
             center = (np.asarray(center_mm) / self.get_pixelsize_on_level(0)[0]).astype(
-                np.int
+                int
             )
 
         # now we have location and center (all _mm variants are not used any more)
@@ -1446,7 +1446,7 @@ class View:
             margin_px = int(margin)
         else:
             margin_px = (size_on_level * margin).astype(
-                np.int
+                int
             )  # / self.anim.openslide.level_downsamples[level]
         return margin_px
 
@@ -1703,7 +1703,7 @@ class View:
         scale_factor = (
             imsl.level_downsamples[former_level] / imsl.level_downsamples[new_level]
         )
-        new_size = (np.asarray(former_size) * scale_factor).astype(np.int)
+        new_size = (np.asarray(former_size) * scale_factor).astype(int)
 
         return new_size
 
@@ -1743,9 +1743,9 @@ class View:
         pixelsize_factor = self.get_pixelsize_on_level(0)[0] / self.region_pixelsize
         delta_px = (
             (other_view.region_location - self.region_location) * pixelsize_factor
-        ).astype(np.int)
+        ).astype(int)
         # start = (self.region_location + delta_px)[::-1]
-        # delta_size_px = (other_view.get_size_on_pixelsize_mm() * pixelsize_factor).astype(np.int)
+        # delta_size_px = (other_view.get_size_on_pixelsize_mm() * pixelsize_factor).astype(int)
         start = delta_px[::-1]
         import imma.image
 
