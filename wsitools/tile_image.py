@@ -88,7 +88,7 @@ class ImageSplitterMerger(object):
 
         # Get the corresponding region in the tile with overlap
         view = self.anim.get_view(
-            location_mm=(img_row_start * pixelsize_mm[0], img_col_start * pixelsize_mm[1]),
+            location_mm=(img_col_start * pixelsize_mm[0], img_row_start * pixelsize_mm[1]),
             pixelsize_mm=pixelsize_mm,
             size_on_level=(self.tilesize_px, self.tilesize_px)
         )
