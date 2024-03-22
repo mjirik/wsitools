@@ -15,7 +15,7 @@ from loguru import logger
 
 # problem is loading lxml together with openslide
 # from lxml import etree
-from typing import List, Union, Optional
+from typing import List, Union
 import os.path as op
 import glob
 import matplotlib.pyplot as plt
@@ -25,10 +25,9 @@ import numpy as np
 import skimage.color
 import skimage.io
 import skimage.transform
-from . import annotation as scan
-from . import libfixer
-from . import image_intensity_rescale
-
+from scaffan import annotation as scan
+from scaffan import libfixer
+from scaffan import image_intensity_rescale
 import imma
 import imma.image
 from pathlib import Path
@@ -44,10 +43,12 @@ annotationID = Union[int, str]
 annotationIDs = List[annotationID]
 
 
+#
+
+
 def import_openslide():
     if os.name == "nt":
         pth = op.expanduser(r"~\Downloads\openslide-win64-20171122\bin")
-        # pth = op.expanduser(r"~\Downloads\openslide-win64-20231011\bin") # TODO: newer version?
         dll_list = glob.glob(op.join(pth, "*.dll"))
         if len(dll_list) < 5:
             print("Trying to download openslide dll files in {}".format(pth))
@@ -61,15 +62,6 @@ def import_openslide():
             logger.debug("add path {}".format(pth))
         os.environ["PATH"] = pth + ";" + os.environ["PATH"]
 
-        # Windows compatibility (otherwise it did not work)
-        # https://openslide.org/api/python/#installing
-        if hasattr(os, 'add_dll_directory'):
-            # Windows
-            with os.add_dll_directory(pth):
-                import openslide
-        else:
-            import openslide
-
 
 import_openslide()
 import openslide
@@ -77,14 +69,14 @@ import openslide
 
 def fix_location_ndpi(imsl, location, level):
     return list(
-        (location - np.mod(location, imsl.level_downsamples[level])).astype(int)
+        (location - np.mod(location, imsl.level_downsamples[level])).astype(np.int)
     )
 
 
 def fix_location_czi(imsl, location, level):
     return list(np.asarray(location) - imsl._czi_start)
     # return list(
-    #     (location - np.mod(location, imsl.level_downsamples[level])).astype(int)
+    #     (location - np.mod(location, imsl.level_downsamples[level])).astype(np.int)
     # )
 
 
@@ -109,7 +101,7 @@ def get_region_location_by_center(imsl, center, level, size):
     size2 = (np.asarray(size) / 2).astype(int)
 
     offset = size2 * imsl.level_downsamples[level]
-    location = (np.asarray(center) - offset).astype(int)
+    location = (np.asarray(center) - offset).astype(np.int)
     return location
 
 
@@ -117,7 +109,7 @@ def get_region_center_by_location(imsl, location, level, size):
     size2 = (np.asarray(size) / 2).astype(int)
 
     offset = size2 * imsl.level_downsamples[level]
-    center = (np.asarray(location) + offset).astype(int)
+    center = (np.asarray(location) + offset).astype(np.int)
     return center
 
 
@@ -187,7 +179,7 @@ def get_resize_parameters(imsl, former_level, former_size, new_level):
     scale_factor = (
         imsl.level_downsamples[former_level] / imsl.level_downsamples[new_level]
     )
-    new_size = (np.asarray(former_size) * scale_factor).astype(int)
+    new_size = (np.asarray(former_size) * scale_factor).astype(np.int)
     return scale_factor, new_size
 
 
@@ -208,7 +200,7 @@ class ImageSlide:
             self.get_thumbnail = self._get_thumbnail_tiff
             self.read_region = self._read_region_other_than_ndpi
             self._set_properties_tiff()
-            self.level_downsamples = [float(2**i) for i in range(0, 8)]
+            self.level_downsamples = [float(2 ** i) for i in range(0, 8)]
             self.level_count = len(self.level_downsamples)
 
         if Path(self.path).suffix.lower() in (".czi"):
@@ -218,7 +210,7 @@ class ImageSlide:
             # self.read_region = self._read_region_other_than_ndpi
             self.read_region = self._read_region_nzi
             self._set_properties_czi()
-            self.level_downsamples = [float(2**i) for i in range(0, 8)]
+            self.level_downsamples = [float(2 ** i) for i in range(0, 8)]
             self.level_count = len(self.level_downsamples)
             # self.dimensions = asdfimsl.dimensions
 
@@ -287,7 +279,7 @@ class ImageSlide:
         :return:
         """
         img = self._get_imagedata()
-        factor = int(2**level)
+        factor = int(2 ** level)
         # factor = self.level_downsamples[level]
 
         newshape = list(img.shape)
@@ -312,10 +304,11 @@ class ImageSlide:
             location = [location[1], location[0]]
             size = [size[1], size[0]]
 
-        factor = int(2**level)
+        factor = int(2 ** level)
         # factor = self.level_downsamples[level]
 
         with CziFile(self.path) as czi:
+
             location_fixed = np.asarray(location) + self._czi_start
             # self._czi_start = czi.start[-3:-1]
             output = image_czi.read_region_with_level(
@@ -422,19 +415,19 @@ class AnnotatedImage:
     Read the image and the annotation. The
     """
 
-    def __init__(self, path: Union[str, Path], skip_read_annotations=False):
+    def __init__(self, path: str, skip_read_annotations=False):
         fs_enc = sys.getfilesystemencoding()
         logger.debug(f"fs_enc: {fs_enc}")
-        logger.debug("Reading file {}".format(str(path)))
+        logger.debug("Reading file {}".format(path))
 
-        self.path = str(path)
+        self.path = path
         # pth_encoded = path.encode(fs_enc)
         # path.encode()
         # logger.debug(f"path encoded {pth_encoded}")
         self.image_type: str = Path(self.path).suffix.lower()
         if self.image_type in (".tiff", ".tif"):
             self.image_type = ".tiff"
-        self.openslide: ImageSlide = ImageSlide(self.path)
+        self.openslide: ImageSlide = ImageSlide(path)
         self.region_location = None
         self.region_size = None
         self.region_level = None
@@ -452,6 +445,7 @@ class AnnotatedImage:
         self.raster_image_preprocessing_function_handler = []  # you can add
 
     def _run_raster_image_preprocessing_function_handler(self, img):
+
         for fcn in self.raster_image_preprocessing_function_handler:
             img = fcn(img)
         return img
@@ -474,13 +468,14 @@ class AnnotatedImage:
         if pixelsize_on_level_0 is not None:
             pixelsize_on_level_0 = np.asarray(pixelsize_on_level_0)
             self.level_pixelsize = [
-                pixelsize_on_level_0 / float(2**i) for i in range(0, 7)
+                pixelsize_on_level_0 / float(2 ** i) for i in range(0, 7)
             ]
             self.level_pixelsize_derived_from_resolution_on_level_0 = True
         else:
             self._set_level_pixelsize_with_openslide()
 
     def _set_level_pixelsize_with_openslide(self):
+
         self.level_pixelsize = [
             get_pixelsize(self.openslide, i, requested_unit=self.pixelunit)[0]
             for i in range(0, self.openslide.level_count)
@@ -556,7 +551,6 @@ class AnnotatedImage:
         height0 = self.openslide.properties["openslide.level[0].height"]
         width0 = self.openslide.properties["openslide.level[0].width"]
         size_on_level0 = np.array([int(height0), int(width0)])
-        # size_on_level0 = np.array([int(width0), int(height0)])
         return size_on_level0
 
     def get_image_by_center(self, center, level=3, size=None, as_gray=True):
@@ -620,6 +614,7 @@ class AnnotatedImage:
                     listOfBeziersNames.append(name)
                     stroke = child.getElementsByTagName("Stroke")
                     if len(stroke) > 0:
+
                         # remove alpha:   #FFFF0000 -> #FF0000
                         color = "#" + stroke[0].firstChild.nodeValue[-6:]
                     else:
@@ -787,15 +782,16 @@ class AnnotatedImage:
 
     def get_full_view(
         self,
-        level: int = 0,
-        pixelsize_mm: Optional[float] = None,
-        safety_bound: float = 2.0,
-        margin: float = 0.0,
+        level=0,
+        pixelsize_mm=None,
+        safety_bound=2,
+        margin=0.0,
         # margin_in_pixels=False,
         # annotation_id=None,
         # margin=0.5,
         # margin_in_pixels=False,
     ) -> "View":
+
         height0 = self.openslide.properties["openslide.level[0].height"]
         width0 = self.openslide.properties["openslide.level[0].width"]
         size_on_level = np.array([int(height0), int(width0)])
@@ -803,14 +799,13 @@ class AnnotatedImage:
         view_level0 = self.get_view(
             location=[0, 0],
             level=0,
-            size_on_level=size_on_level[::-1],
+            size_on_level=size_on_level,
             margin=margin,
             margin_in_pixels=False,
         )
         if pixelsize_mm is not None:
             view = view_level0.to_pixelsize(
-                pixelsize_mm=pixelsize_mm,
-                safety_bound=safety_bound,
+                pixelsize_mm=pixelsize_mm, safety_bound=safety_bound,
             )
         elif level is not None:
             view = view_level0.to_level(level)
@@ -835,6 +830,7 @@ class AnnotatedImage:
         margin=0.0,
         margin_in_pixels=False,
     ) -> "View":
+
         view = View(
             anim=self,
             center=center,
@@ -1042,6 +1038,7 @@ class AnnotatedImage:
         return views
 
     def set_region(self, center=None, level=0, size=None, location=None):
+
         if size is None:
             size = [256, 256]
 
@@ -1181,6 +1178,7 @@ class AnnotatedImage:
         return center, size
 
     def get_region_image(self, as_gray=False, as_unit8=False):
+
         location = fix_location_ndpi(
             self.openslide, self.region_location, self.region_level
         )
@@ -1279,12 +1277,6 @@ class View:
         self._requested_size_on_level_when_defined_by_pixelsize = None
         self._is_resized_by_pixelsize = None
 
-        self.region_level = None
-        self.region_size_on_level = None
-        self.region_pixelsize = None
-        self.region_pixelunit = None
-        self.zoom: Optional[np.array] = None
-
         self.set_region(
             center=center,
             level=level,
@@ -1301,7 +1293,7 @@ class View:
         )
         self.select_outer_annotations = self.anim.select_outer_annotations
         self.select_inner_annotations = self.anim.select_inner_annotations
-        self.get_region_image = self.get_raster_image
+        self.get_raster_image = self.get_region_image
         self.get_annotation_region_raster = self.get_annotation_raster
 
     def set_region(
@@ -1314,10 +1306,10 @@ class View:
         pixelsize_mm=None,
         center_mm=None,
         location_mm=None,
-        safety_bound: float = 2,
-        annotation_id: Optional[int] = None,
+        safety_bound=2,
+        annotation_id=None,
         # margin=0.5,
-        margin: float = 0.0,
+        margin=0.0,
         margin_in_pixels: bool = False,
     ):
         self._requested_size_on_level_when_defined_by_pixelsize = None
@@ -1345,7 +1337,7 @@ class View:
                         size_on_level
                     )
                     size_on_level = size_on_level * alpha
-                    size_on_level = size_on_level.astype(int)
+                    size_on_level = size_on_level.astype(np.int)
 
         else:
             if level is None:
@@ -1361,7 +1353,7 @@ class View:
             if size_on_level is None and size_mm is None:
                 size_on_level = (
                     size_on_level0 / self.anim.openslide.level_downsamples[level]
-                ).astype(int)
+                ).astype(np.int)
 
         if size_mm is not None:
             if np.isscalar(size_mm):
@@ -1371,7 +1363,7 @@ class View:
             size_mm = np.asarray(size_mm)
             size_on_level = np.ceil(
                 size_mm / self.get_pixelsize_on_level(level)[0]
-            ).astype(int)
+            ).astype(np.int)
 
         if size_on_level is None:
             size_on_level = [256, 256]
@@ -1392,16 +1384,16 @@ class View:
             self.zoom = pxsz / (1.0 * pixelsize_mm)
             self.region_size_on_pixelsize_mm = np.ceil(
                 size_on_level * self.zoom
-            ).astype(int)
+            ).astype(np.int)
         else:
             self.region_size_on_pixelsize_mm = size_on_level
             self.zoom = np.array([1, 1])
 
         if location_mm is not None:
-            location = (location_mm / self.get_pixelsize_on_level(0)[0]).astype(int)
+            location = (location_mm / self.get_pixelsize_on_level(0)[0]).astype(np.int)
         if center_mm is not None:
             center = (np.asarray(center_mm) / self.get_pixelsize_on_level(0)[0]).astype(
-                int
+                np.int
             )
 
         # now we have location and center (all _mm variants are not used any more)
@@ -1454,7 +1446,7 @@ class View:
             margin_px = int(margin)
         else:
             margin_px = (size_on_level * margin).astype(
-                int
+                np.int
             )  # / self.anim.openslide.level_downsamples[level]
         return margin_px
 
@@ -1528,6 +1520,7 @@ class View:
         #     # ann_raster = ann_raster1
         # else:
         for hole_id in holes_ids:
+
             ann_raster2 = self.get_annotation_raster(hole_id)
             ann_raster = ann_raster ^ ann_raster2
         return ann_raster
@@ -1624,13 +1617,11 @@ class View:
         return get_region_center_by_location(self.anim.openslide, location, level, size)
 
     def get_region_image_resolution(
-        self,
-        resolution_mm,
-        as_gray=False,
+        self, resolution_mm, as_gray=False,
     ):
         self.anim.openslide.level_downsamples
 
-    def get_raster_image(self, as_gray=False, log_level="TRACE"):
+    def get_region_image(self, as_gray=False, log_level="TRACE"):
         """
         Get raster image from the view. It can have defined pixelsize, and also the level
         :param as_gray:
@@ -1712,7 +1703,7 @@ class View:
         scale_factor = (
             imsl.level_downsamples[former_level] / imsl.level_downsamples[new_level]
         )
-        new_size = (np.asarray(former_size) * scale_factor).astype(int)
+        new_size = (np.asarray(former_size) * scale_factor).astype(np.int)
 
         return new_size
 
@@ -1752,9 +1743,9 @@ class View:
         pixelsize_factor = self.get_pixelsize_on_level(0)[0] / self.region_pixelsize
         delta_px = (
             (other_view.region_location - self.region_location) * pixelsize_factor
-        ).astype(int)
+        ).astype(np.int)
         # start = (self.region_location + delta_px)[::-1]
-        # delta_size_px = (other_view.get_size_on_pixelsize_mm() * pixelsize_factor).astype(int)
+        # delta_size_px = (other_view.get_size_on_pixelsize_mm() * pixelsize_factor).astype(np.int)
         start = delta_px[::-1]
         import imma.image
 
@@ -1796,11 +1787,11 @@ class View:
 
     def get_full_view(
         self,
-        level: Optional[int] = None,
-        pixelsize_mm: Optional[float] = None,
-        safety_bound: float = 2,
-        margin: float = 0.0,
-        margin_in_pixels: bool = False,
+        level=None,
+        pixelsize_mm=None,
+        safety_bound=2,
+        margin=0.0,
+        margin_in_pixels=False,
         # annotation_id=None,
         # margin=0.5,
         # margin_in_pixels=False,
@@ -1864,6 +1855,7 @@ def imshow_with_colorbar(*args, **kwargs):
 
 
 def get_offset_px(imsl: ImageSlide):
+
     pm = imsl.properties
     pixelsize, pixelunit = get_pixelsize(imsl, requested_unit="mm")
     offset = np.asarray(

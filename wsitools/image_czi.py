@@ -54,6 +54,7 @@ def get_py_slices(
 
     # TODO the size of the endpoint should be probably +1
     if isconj:
+
         st_in_s = np.max(np.vstack([r_st - s_st, [0, 0]]), axis=0).astype(int)
         sp_in_s = np.min(np.vstack([r_st + r_sh - s_st, s_sh]), axis=0).astype(int)
         st_in_sn = np.max(np.vstack([(r_st - s_st) / odf, [0, 0]]), axis=0).astype(int)
@@ -107,7 +108,7 @@ def read_region_with_level(
     :param downscale_factor: it is di
     :return:
     """
-    downscale_factor = int(2**level)
+    downscale_factor = int(2 ** level)
     requested_start = location
     requested_size = size
     value = 0
@@ -153,7 +154,7 @@ def read_region_with_level(
             # if subb.shape == subb.stored_shape:
             # this is fast
             subb_shape = subb.shape[-3:-1]
-            stored_shape = tuple(np.asarray(subb.stored_shape) * 2**level)[-3:-1]
+            stored_shape = tuple(np.asarray(subb.stored_shape) * 2 ** level)[-3:-1]
             if subb_shape == stored_shape:  # subb.stored_shape:
                 sd = subb.data(resize=False)
                 img = sd[..., sl_sn[0], sl_sn[1], :]

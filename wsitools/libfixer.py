@@ -23,6 +23,7 @@ def download_and_unzip(url, outdir):
     #     import wget as pywget
 
     if outdir is None:
+
         outdir = tempfile.gettempdir()
         # print("temp directory ", outdir)
         outdir = tempfile.mkdtemp()
@@ -42,6 +43,7 @@ def download_and_unzip(url, outdir):
 
 
 def libfix():
+
     # glob.glob(op.expanduser("~/Downloads/"))
     if sys.platform.startswith("win"):
         # print("Trying to download .dll libraries")
@@ -71,8 +73,8 @@ def libfix():
 
 def libfix_windows(url=None):
     if url is None:
-        if sys.maxsize > 2**32:
-            url = "https://github.com/openslide/openslide-winbuild/releases/download/v20171122/openslide-win64-20171122.zip" #TODO: newer version of openslide?
+        if sys.maxsize > 2 ** 32:
+            url = "https://github.com/openslide/openslide-winbuild/releases/download/v20171122/openslide-win64-20171122.zip"
         else:
             url = "https://github.com/openslide/openslide-winbuild/releases/download/v20171122/openslide-win32-20171122.zip"
     outdir = download_and_unzip(url, op.expanduser("~/Downloads/"))
