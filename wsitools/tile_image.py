@@ -145,17 +145,33 @@ class ImageSplitterMerger(object):
             if self.fcn is not None:
                 processed_tile = self.fcn(tile)
 
-                # Normalize to 0-255 range
-                processed_tile_normalized = cv2.normalize(processed_tile, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_32F)
+                if processed_tile.dtype != np.uint8:
+                   processed_tile_normalized = normalize_tile(processed_tile)
+                   processed_tiles.append(processed_tile_normalized)
 
-                # Convert to uint8 for compatibility (optional)
-                processed_tile_normalized = processed_tile_normalized.astype(np.uint8)
+                else:
+                  processed_tiles.append(processed_tile)
 
-            processed_tiles.append(processed_tile_normalized)
+            else:
+                if tile.dtype != np.uint8:
+                    tile_normalized = normalize_tile(tile)
+                    processed_tiles.append(tile_normalized)
+                else:
+                    processed_tiles.append(tile)
 
         merged_img = self.merge_tiles_to_image(processed_tiles)
 
         return merged_img
+
+
+def normalize_tile(tile:np.array) -> np.array:
+    # Normalize to 0-255 range
+    tile_normalized = cv2.normalize(tile, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_32F)
+
+    # Convert to uint8 for compatibility (optional)
+    tile_normalized = tile_normalized.astype(np.uint8)
+
+    return tile_normalized
 
 
 def load_image(img_path: Path) -> np.array:
