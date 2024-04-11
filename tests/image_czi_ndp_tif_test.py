@@ -34,8 +34,9 @@ import wsitools.image as scim
 
 def test_read_tiff_landscape():
 
-    fn = io3d.joinp(r"medical\orig\Scaffan-analysis-czi\J7_5\J7_5_b_test_4_landscape.czi")
+    # fn = io3d.joinp(r"medical\orig\Scaffan-analysis-czi\J7_5\J7_5_b_test_4_landscape.czi")
     # fn = io3d.joinp("medical/orig/scaffan_png_tiff/split_176_landscape.tif")
+    fn = io3d.joinp(r"medical/orig/sample_data/SCP003/SCP003.ndpi")
     # fn.absolute()
     assert Path(fn).absolute().exists()
     logger.debug("filename {}".format(fn))

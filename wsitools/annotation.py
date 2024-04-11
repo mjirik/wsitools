@@ -232,7 +232,7 @@ def read_annotations_ndpa(pth) -> list:
         # print(output)
 
         cwd = op.dirname(op.dirname(__file__))
-        command = [sys.executable, "-m", "scaffan.ann_to_json", pth]
+        command = [sys.executable, "-m", "wsitools.ann_to_json", str(pth)]
         try:
             output = subprocess.check_output(command, cwd=cwd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
@@ -250,9 +250,9 @@ def read_annotations_ndpa(pth) -> list:
         # print(output)
     else:
         # if not op.exists(fn):
-        ndpa_to_json(pth)
+        ndpa_to_json(str(pth))
 
-    fn = pth + ".ndpa.json"
+    fn = str(pth) + ".ndpa.json"
     if op.exists(fn):
         with open(fn) as f:
             data = json.load(f)
@@ -357,7 +357,7 @@ def annotations_px_to_mm(imsl, annotations):
 
 
 def annotations_to_px(imsl, annotations):
-    from scaffan.image import get_offset_px, get_pixelsize
+    from wsitools.image import get_offset_px, get_pixelsize
 
     offset_px = get_offset_px(imsl)
     pixelsize, pixelunit = get_pixelsize(imsl, requested_unit="mm")

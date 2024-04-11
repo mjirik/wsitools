@@ -16,12 +16,18 @@ You can try several demos:
 
 ## Installation
 ```commandline
-pip install openslide-python imagecodecs loguru read_roi czifile
+pip install openslide-python openslide-bin imagecodecs loguru read_roi czifile
 pip install git+https://github.com/mjirik/imma.git
+[//]: # (apt-get install openslide-tools)
 
-apt-get install openslide-tools
-pip install openslide-python
+[//]: # (pip install openslide-python)
 ```
+
+
+[](https://github.com/VaJavorek/livergan/blob/main/img/comparison/Comparison_PIG-002_J-18-0092_HE__-1_split_1200.png?raw=true)
+
+
+
 
 ```commandline
 pip install git+https://github.com/mjirik/wsitools.git
