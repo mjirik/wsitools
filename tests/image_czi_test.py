@@ -25,10 +25,12 @@ import matplotlib.pyplot as plt
 
 skip_on_local = False
 
-import scaffan.image as scim
-from scaffan import image_czi
+import wsitools.image as scim
+from wsitools import image_czi
 
-scim.import_openslide()
+# scim.import_openslide()
+# import openslide_bin
+# import openslide
 import io3d
 from czifile import CziFile
 

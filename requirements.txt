@@ -6,3 +6,6 @@ scikit-image~=0.20.0
 setuptools~=68.2.2
 pillow~=10.2.0
 scipy~=1.11.4
+# openslide-python
+# openslide-bin
+# ruamel-yaml

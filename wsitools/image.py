@@ -43,28 +43,16 @@ annotationID = Union[int, str]
 annotationIDs = List[annotationID]
 
 
-#
-
-
-def import_openslide():
-    if os.name == "nt":
-        pth = op.expanduser(r"~\Downloads\openslide-win64-20171122\bin")
-        dll_list = glob.glob(op.join(pth, "*.dll"))
-        if len(dll_list) < 5:
-            print("Trying to download openslide dll files in {}".format(pth))
-            libfixer.libfix()
-        # pth = op.expanduser(r"~\projects\scaffan\devel\knihovny")
-        # pth = op.expanduser(r"~\Miniconda3\envs\lisa36\Library\bin")
-        sys.path.insert(0, pth)
-        orig_PATH = os.environ["PATH"]
-        orig_split = orig_PATH.split(";")
-        if pth not in orig_split:
-            logger.debug("add path {}".format(pth))
-        os.environ["PATH"] = pth + ";" + os.environ["PATH"]
-
-
-import_openslide()
+import openslide_bin
 import openslide
+
+# libfixer.import_openslide()
+# try:
+#     import openslide
+# except ImportError as e:
+#     logger.debug("Cannot import openslide. Use conda install -c conda-forge openslide-python")
+#     raise e
+
 
 
 def fix_location_ndpi(imsl, location, level):

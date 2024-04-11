@@ -25,14 +25,12 @@ import matplotlib.pyplot as plt
 
 skip_on_local = False
 
-import scaffan.image as scim
+import wsitools.image as scim
 
 scim.import_openslide()
 import openslide
 
 import io3d
-import scaffan
-import scaffan.image as scim
 
 
 @pytest.fixture

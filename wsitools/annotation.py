@@ -15,7 +15,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import re
 import math
-from read_roi import read_roi_zip
 
 __version__ = "0.34.2"
 
@@ -176,6 +175,11 @@ def read_annotations_imagej(path, slide_size) -> list:
     anns = []
     if op.exists(fn):
         # def read_annotations_imagej(, slide_size=slide_size):
+        try:
+            from read_roi import read_roi_zip
+        except ImportError as e:
+            logger.error("read_roi module (for reading ImageJ annotations) is not installed. Use 'pip install read-roi'")
+            raise e
         rois = read_roi_zip(fn)
         roi_size = get_imsize_from_imagej_roi(rois)
         ratio = np.asarray(slide_size) / roi_size
