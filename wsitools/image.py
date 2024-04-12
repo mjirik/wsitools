@@ -271,10 +271,10 @@ class ImageSlide:
         # factor = self.level_downsamples[level]
 
         newshape = list(img.shape)
-        newshape[0] = size[0]
-        newshape[1] = size[1]
-        sl0 = slice(location[0], location[0] + (size[0] * factor))
-        sl1 = slice(location[1], location[1] + (size[1] * factor))
+        newshape[0] = size[1]
+        newshape[1] = size[0]
+        sl1 = slice(location[0], location[0] + (size[0] * factor))
+        sl0 = slice(location[1], location[1] + (size[1] * factor))
         imcrop = img[sl0, sl1].copy()
         logger.debug(f"imcrop.shape={imcrop.shape}, newshape={newshape}")
         out = skimage.transform.resize(imcrop, newshape)
@@ -287,6 +287,7 @@ class ImageSlide:
         image_czi.instal_codecs_with_pip()
 
         # This swap make all the behavior compatible with OpenSlide
+        # TODO maybe here is the problem
         if self.compatible_with_openslide:
             # swap axes
             location = [location[1], location[0]]
@@ -342,6 +343,7 @@ class ImageSlide:
         meta_dict["tiff.ResolutionUnit"] = "m"
         meta_dict["tiff.XResolution"] = 1 / xres
         meta_dict["tiff.YResolution"] = 1 / yres
+        # TODO here it might be swaped
         meta_dict["openslide.level[0].height"] = self._czi_shape[0]
         meta_dict["openslide.level[0].width"] = self._czi_shape[1]
         meta_dict["hamamatsu.XOffsetFromSlideCentre"] = -int(self._czi_shape[0] / 2)
@@ -380,14 +382,16 @@ class ImageSlide:
             xres = 1.0
             yres = 1.0
 
+        # TODO
         self.dimensions = [meta_dict["ImageLength"][0], meta_dict["ImageWidth"][0]]
         meta_dict["tiff.ResolutionUnit"] = "m"
         meta_dict["tiff.XResolution"] = 1.0 / xres
         meta_dict["tiff.YResolution"] = 1.0 / yres
         meta_dict["hamamatsu.XOffsetFromSlideCentre"] = 0
         meta_dict["hamamatsu.YOffsetFromSlideCentre"] = 0
-        meta_dict["openslide.level[0].height"] = self.dimensions[1]
-        meta_dict["openslide.level[0].width"] = self.dimensions[0]
+        # TODO width is set to length here
+        meta_dict["openslide.level[0].height"] = self.dimensions[0]
+        meta_dict["openslide.level[0].width"] = self.dimensions[1]
         self.properties = meta_dict
 
     #     if self.openslide is not None:
@@ -782,8 +786,10 @@ class AnnotatedImage:
 
         height0 = self.openslide.properties["openslide.level[0].height"]
         width0 = self.openslide.properties["openslide.level[0].width"]
-        size_on_level = np.array([int(height0), int(width0)])
-        # size_on_level = np.array([int(width0), int(height0)])
+        # TODO check if this is correct
+        # size_on_level = np.array([int(height0), int(width0)])
+        size_on_level = np.array([int(width0), int(height0)])
+        # size_on_level = [width, height]
         view_level0 = self.get_view(
             location=[0, 0],
             level=0,
@@ -818,6 +824,13 @@ class AnnotatedImage:
         margin=0.0,
         margin_in_pixels=False,
     ) -> "View":
+        """
+
+        :param location_mm: [horizontal, vertical]
+        :param location: [horizontal, vertical]
+        :param size_mm: [width, height]
+        :param size: [width, height]
+        """
 
         view = View(
             anim=self,
@@ -1261,6 +1274,16 @@ class View:
         margin=0.0,
         margin_in_pixels: bool = False,
     ):
+        """
+        Get view on the image defined by 3 numbers like center, level and size.
+
+
+        :param location_mm: [horizontal, vertical]
+        :param location: [horizontal, vertical]
+        :param size_mm: [width, height]
+        :param size: [width, height]
+
+        """
         self.anim: AnnotatedImage = anim
         self._requested_size_on_level_when_defined_by_pixelsize = None
         self._is_resized_by_pixelsize = None
@@ -1300,6 +1323,13 @@ class View:
         margin=0.0,
         margin_in_pixels: bool = False,
     ):
+        """
+
+        :param location_mm: [horizontal, vertical]
+        :param location: [horizontal, vertical]
+        :param size_mm: [width, height]
+        :param size: [width, height]
+        """
         self._requested_size_on_level_when_defined_by_pixelsize = None
         if (level is None) and (pixelsize_mm is None) and (size_on_level is not None):
             raise ValueError(
@@ -1618,6 +1648,7 @@ class View:
         along each axis.
         :param level: The level of output image can be controled by this parameter. The computation of optimal level
         can be skipped by this.
+
         :return:
         """
 
@@ -1627,6 +1658,7 @@ class View:
                 self.anim.openslide, location, self.region_level
             )
         imcr = self.anim.openslide.read_region(
+            # TODO here should be changed order of size
             location, level=self.region_level, size=self.region_size_on_level
         )
         im = np.asarray(imcr)

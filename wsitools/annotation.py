@@ -15,6 +15,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import re
 import math
+from typing import Union
+from pathlib import Path
 
 __version__ = "0.34.2"
 
@@ -159,7 +161,7 @@ def get_imsize_from_imagej_roi(rois):
     return np.array([height, width])
 
 
-def read_annotations_imagej(path, slide_size) -> list:
+def read_annotations_imagej(path:Union[str, Path], slide_size) -> list:
     """
     Read annotation from ImageJ. It is stored in `.roi.zip` file. There should be one rectangle annotation over
     whole image to allow get size of the image used to produce the ROI.
@@ -170,6 +172,7 @@ def read_annotations_imagej(path, slide_size) -> list:
     """
     # import io3d
     # import numpy as np
+    path = str(path)
     fn = path + ".roi.zip"
     logger.debug(f"Looking for ROI file {fn}")
     anns = []
@@ -346,7 +349,7 @@ def annotations_px_to_mm(imsl, annotations):
     :param annotations:
     :return:
     """
-    from scaffan.image import get_offset_px, get_pixelsize
+    from .image import get_offset_px, get_pixelsize
 
     offset_px = get_offset_px(imsl)
     pixelsize, pixelunit = get_pixelsize(imsl, requested_unit="mm")
