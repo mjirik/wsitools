@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import cv2
 import os
@@ -81,16 +82,14 @@ class ImageSplitterMerger(object):
         pixelsize_mm = self.pixelsize_mm
 
         # Calculate the valid region to copy from the original image
-        img_row_start = max(0, row_start - overlap_px)
-        img_row_end = min(img_shape[0], row_end + overlap_px)
-        img_col_start = max(0, col_start - overlap_px)
-        img_col_end = min(img_shape[1], col_end + overlap_px)
+        img_row_start = max(-math.inf, row_start - overlap_px)
+        img_col_start = max(-math.inf, col_start - overlap_px)
 
         # Get the corresponding region in the tile with overlap
         view = self.anim.get_view(
             location_mm=(img_col_start * pixelsize_mm[0], img_row_start * pixelsize_mm[1]),
             pixelsize_mm=pixelsize_mm,
-            size_on_level=(self.tilesize_px, self.tilesize_px)
+            size_on_level=(self.tilesize_px + 2 * overlap_px, self.tilesize_px + 2 * overlap_px),
         )
 
         overlapped_tile = view.get_region_image(as_gray=False)

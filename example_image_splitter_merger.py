@@ -34,22 +34,22 @@ if __name__ == '__main__':
     # Possible filenames: J7_5_a.czi, J7_25_a_ann0004.czi, J8_8_a.czi
     filename = "J7_5_a.czi"
 
-    # URL of the file on GitHub
-    url_path = "https://github.com/janburian/Masters_thesis/raw/main/data_czi/" + filename
-
-    # Fetch the file
-    response = requests.get(url_path)
-
-    # Check if the request was successful
-    if response.status_code == 200:
-        # Save the content to a local file
-        with open(filename, "wb") as file:
-            file.write(response.content)
-    else:
-        print("Failed to fetch the file from GitHub")
+    # # URL of the file on GitHub
+    # url_path = "https://github.com/janburian/Masters_thesis/raw/main/data_czi/" + filename
+    #
+    # # Fetch the file
+    # response = requests.get(url_path)
+    #
+    # # Check if the request was successful
+    # if response.status_code == 200:
+    #     # Save the content to a local file
+    #     with open(filename, "wb") as file:
+    #         file.write(response.content)
+    # else:
+    #     print("Failed to fetch the file from GitHub")
 
     # Create an ImageSplitterMerger instance with the specified parameters
-    image = ImageSplitterMerger(filename, tilesize_px=200, overlap_px=0, pixelsize_mm=[0.01, 0.01],
+    image = ImageSplitterMerger(filename, tilesize_px=200, overlap_px=50, pixelsize_mm=[0.01, 0.01],
                                 fcn=process_tile_test)
 
     # Split and merge the image, applying the specified tile processing function
