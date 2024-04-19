@@ -97,7 +97,6 @@ class ImageSplitterMerger(object):
 
         return overlapped_tile
 
-
     def merge_tiles_to_image(self, tiles: list) -> np.array:
         """Merge tiles into an image and remove overlap."""
         tilesize_px = self.tilesize_px
@@ -164,11 +163,18 @@ class ImageSplitterMerger(object):
 
 
 def normalize_tile(tile: np.array) -> np.array:
-    # Normalize to 0-255 range
-    tile_normalized = cv2.normalize(tile, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_32F)
+    # Check if the image is mostly white
+    mean_intensity = np.mean(tile)
+    std_dev = np.std(tile)
+    is_white = mean_intensity >= 0.99 and std_dev <= 0.01  # Adjust thresholds as needed
+    tile_normalized = np.full_like(tile, 255.0, dtype=np.uint8)
 
-    # Convert to uint8 for compatibility (optional)
-    tile_normalized = tile_normalized.astype(np.uint8)
+    if not is_white:
+        # Normalize to 0-255 range
+        tile_normalized = cv2.normalize(tile, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_32F)
+
+        # Convert to uint8 for compatibility (optional)
+        tile_normalized = tile_normalized.astype(np.uint8)
 
     return tile_normalized
 
