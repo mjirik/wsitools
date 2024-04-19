@@ -9,3 +9,9 @@ scipy~=1.11.4
 # openslide-python
 # openslide-bin
 # ruamel-yaml
+
+czifile~=2019.7.2
+imma~=0.18.5
+opencv-python~=4.9.0.80
+tqdm~=4.66.2
+requests~=2.31.0

@@ -26,15 +26,16 @@ class ImageSplitterMerger(object):
 
         setattr(self, "view", view)
         setattr(self, "anim", anim)
-        setattr(self, "img_shape", shape)
+        setattr(self, "img_shape", shape)  # 1st element num_columns, 2nd element num_rows (probably)
 
     def get_num_cols_rows(self, img_shape: list) -> tuple:
         """Calculate the number of rows and columns based on image shape."""
         tilesize_px = self.tilesize_px
         overlap_px = self.overlap_px
 
-        num_rows = int(np.ceil(img_shape[0] / (tilesize_px - overlap_px)))
-        num_cols = int(np.ceil(img_shape[1] / (tilesize_px - overlap_px)))
+        # img_shape: 1st element num_columns, 2nd element num_rows (probably)
+        num_rows = int(np.ceil(img_shape[1] / (tilesize_px - overlap_px)))
+        num_cols = int(np.ceil(img_shape[0] / (tilesize_px - overlap_px)))
 
         return num_rows, num_cols
 
@@ -54,8 +55,7 @@ class ImageSplitterMerger(object):
 
     def split_iterator(self) -> np.array:
         """Split image into tiles and yield each tile."""
-        img = self.img_path
-        img_shape = self.img_shape
+        img_shape = self.img_shape  # 1st element num_columns, 2nd element num_rows (probably)
         tilesize_px = self.tilesize_px
         overlap_px = self.overlap_px
 
@@ -97,16 +97,16 @@ class ImageSplitterMerger(object):
 
         return overlapped_tile
 
+
     def merge_tiles_to_image(self, tiles: list) -> np.array:
         """Merge tiles into an image and remove overlap."""
-        orig_image = self.img_path
         tilesize_px = self.tilesize_px
         overlap_px = self.overlap_px
-        img_shape = self.img_shape
+        img_shape = self.img_shape  # 1st element num_columns, 2nd element num_rows (probably)
         (num_rows, num_cols) = self.get_num_cols_rows(img_shape)
 
         # Initialize the merged image
-        merged_image = np.zeros(img_shape, dtype="uint8")
+        merged_image = np.zeros(img_shape, dtype="uint8").transpose(1, 0, 2)  # to get num_rows on index 0 and num_columns on index 1
 
         with tqdm.tqdm(total=num_rows * num_cols, desc="Merging Tiles") as pbar:
             for i in range(num_rows):
@@ -141,16 +141,15 @@ class ImageSplitterMerger(object):
         total_tiles = self.get_number_tiles(self.img_shape)
 
         for tile in tqdm.tqdm(self.split_iterator(), total=total_tiles, desc="Splitting and Processing Tiles"):
-            processed_tile_normalized = np.copy(tile)
             if self.fcn is not None:
                 processed_tile = self.fcn(tile)
 
                 if processed_tile.dtype != np.uint8:
-                   processed_tile_normalized = normalize_tile(processed_tile)
-                   processed_tiles.append(processed_tile_normalized)
+                    processed_tile_normalized = normalize_tile(processed_tile)
+                    processed_tiles.append(processed_tile_normalized)
 
                 else:
-                  processed_tiles.append(processed_tile)
+                    processed_tiles.append(processed_tile)
 
             else:
                 if tile.dtype != np.uint8:
@@ -164,7 +163,7 @@ class ImageSplitterMerger(object):
         return merged_img
 
 
-def normalize_tile(tile:np.array) -> np.array:
+def normalize_tile(tile: np.array) -> np.array:
     # Normalize to 0-255 range
     tile_normalized = cv2.normalize(tile, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_32F)
 

@@ -32,7 +32,7 @@ def process_tile_test(tile: np.array) -> np.array:
 if __name__ == '__main__':
     # Define the path to the CZI file
     # Possible filenames: J7_5_a.czi, J7_25_a_ann0004.czi, J8_8_a.czi
-    filename = "J7_25_a_ann0004.czi"
+    filename = "J7_5_a.czi"
 
     # URL of the file on GitHub
     url_path = "https://github.com/janburian/Masters_thesis/raw/main/data_czi/" + filename
@@ -49,7 +49,7 @@ if __name__ == '__main__':
         print("Failed to fetch the file from GitHub")
 
     # Create an ImageSplitterMerger instance with the specified parameters
-    image = ImageSplitterMerger(filename, tilesize_px=10, overlap_px=0, pixelsize_mm=[0.0003, 0.0003],
+    image = ImageSplitterMerger(filename, tilesize_px=200, overlap_px=0, pixelsize_mm=[0.01, 0.01],
                                 fcn=process_tile_test)
 
     # Split and merge the image, applying the specified tile processing function
