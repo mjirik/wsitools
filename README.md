@@ -13,6 +13,7 @@ Merged tiles create picture in .png format.
 You can try several demos:
 * Basic introduction to wsitools module: https://colab.research.google.com/drive/1kDjsbPCEFS65AdRftMJ5JoS8pr350pbW?usp=sharing
 * Split and merge medical image with tile processing: https://colab.research.google.com/drive/1x9fY0MBUAcPELJuKJl31Hh6i_LYV89Qs?usp=sharing
+* Split and merge with [livergan](https://github.com/VaJavorek/livergan) processing: https://colab.research.google.com/drive/1DDdi8x68rShRWBMQPJ9aq9zxtGmUsFqM?usp=sharing
 
 ## Installation
 ```commandline
