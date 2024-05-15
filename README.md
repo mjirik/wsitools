@@ -11,8 +11,8 @@ Merged tiles create picture in .png format.
 
 ## Google Colab notebooks
 You can try several demos:
-* Basic introduction to wsitools module: https://drive.google.com/file/d/1fBec9mZ3ikn7lOIyInYwLDNBtarqSd3f/view?usp=sharing
-* Split and merge medical image with tile processing: https://drive.google.com/file/d/1-cNo1gZc0G6-JXSZ43zDVvucKa0qfFVH/view?usp=sharing
+* Basic introduction to wsitools module: https://colab.research.google.com/drive/11V3IsbZkQt5UohQfbvA9QjTamn9GjCwa?usp=sharing
+* Split and merge medical image with tile processing: https://colab.research.google.com/drive/1K88LpwIdc5GGzTZkZTtk4LQt9N0SBDwl?usp=sharing
 * Split and merge with [livergan](https://github.com/VaJavorek/livergan) processing: https://colab.research.google.com/drive/1DDdi8x68rShRWBMQPJ9aq9zxtGmUsFqM?usp=sharing
 * Extraction of extracellular matrix from histological microscopic images of the liver using segmentation and inpainting methods https://colab.research.google.com/drive/1Ss9Z2qciXUauu5FqmUMaaBH8MZtGplRT?usp=sharing
 
