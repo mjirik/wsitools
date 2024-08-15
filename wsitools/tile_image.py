@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 import os
 from pathlib import Path
-import tqdm
+from tqdm.auto import tqdm
 
 from . import image
 
@@ -106,7 +106,7 @@ class ImageSplitterMerger(object):
         # Initialize the merged image
         merged_image = np.zeros(img_shape, dtype="uint8").transpose(1, 0, 2)  # to get num_rows on index 0 and num_columns on index 1
 
-        with tqdm.tqdm(total=num_rows * num_cols, desc="Merging Tiles") as pbar:
+        with tqdm(total=num_rows * num_cols, desc="Merging Tiles") as pbar:
             for i in range(num_rows):
                 for j in range(num_cols):
                     idx = i * num_cols + j
@@ -138,7 +138,7 @@ class ImageSplitterMerger(object):
         processed_tiles = []
         total_tiles = self.get_number_tiles(self.img_shape)
 
-        for tile in tqdm.tqdm(self.split_iterator(), total=total_tiles, desc="Splitting and Processing Tiles"):
+        for tile in tqdm(self.split_iterator(), total=total_tiles, desc="Splitting and Processing Tiles"):
             if self.fcn is not None:
                 processed_tile = self.fcn(tile)
 
